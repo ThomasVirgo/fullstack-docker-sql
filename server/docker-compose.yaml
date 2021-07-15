@@ -1,0 +1,39 @@
+version: '3'
+services:
+  server:
+    image: node:latest
+    working_dir: /code
+    ports: 
+      - 3000:3000
+    environment: 
+      - PGUSER=tomV
+      - PGHOST=db
+      - PGPASSWORD=password
+      - PGDATABASE=users_test
+      - PGPORT=5432
+    depends_on:
+      - db
+    volumes:
+      - type: bind
+        source: ./
+        target: /code
+    command: bash -c "npm install && npm run dev"
+
+  db:
+    image: postgres:latest
+    volumes:
+      - "dbdata:/var/lib/postgresql/data"
+      - "./dbSetup:/docker-entrypoint-initdb.d/:ro"
+    environment: 
+      - POSTGRES_DB=users_test
+      - POSTGRES_USER=tomV
+      - POSTGRES_PASSWORD=password
+volumes:
+  dbdata:
+
+# can access the datbase through docker container via: docker exec -it <container-name> psql -U tomV users_test
+# ./dbSetup in the volumes key refers to setting up DB from the dbSetup folder
+# source is ./ for the server since index and app.js are level with this file
+# should put server files in folder called api and then source would be ./.api
+# make sure have the working directory set to same as target
+# depends on db means set the db up first and then do the server
