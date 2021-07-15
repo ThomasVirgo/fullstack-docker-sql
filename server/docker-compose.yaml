@@ -37,3 +37,4 @@ volumes:
 # should put server files in folder called api and then source would be ./.api
 # make sure have the working directory set to same as target
 # depends on db means set the db up first and then do the server
+# use docker-compose down --volumes to ensure the volumes are removed and db is reinitialised on startup
