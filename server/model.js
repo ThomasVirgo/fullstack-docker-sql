@@ -3,8 +3,10 @@ const db = require('./dbConfig');
 class User {
     constructor(data){
         this.id = data.id;
-        this.name = data.name;
-        this.age = data.age;
+        this.name = data.name || 'dummy_name';
+        this.age = data.age || 100;
+        this.username = data.username;
+        this.password = data.password;
     }
 
     //note that static methods are called on the class itself (i.e. User) and not on an instance of the class
@@ -35,7 +37,7 @@ class User {
     static create(data){
         return new Promise (async (resolve,reject) => {
             try{
-                const userTable = await db.query('INSERT INTO users (name,age) VALUES ($1, $2) RETURNING *', [ data.name, data.age ]);
+                const userTable = await db.query('INSERT INTO user_data (username,password,name,age) VALUES ($1, $2, $3, $4) RETURNING *', [ data.username, data.password, data.name, data.age ]);
                 let newUser = new User(userTable.rows[0]);
                 resolve(newUser);
             } catch (err) {

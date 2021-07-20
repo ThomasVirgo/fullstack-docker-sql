@@ -45,3 +45,39 @@ async function postData(event){
 
 createUserElements();
 
+
+
+//logging in with authentication
+
+const loginForm = document.getElementById('login');
+loginForm.addEventListener('submit', login);
+
+async function login(event){
+    event.preventDefault();
+    let username = event.target.username.value;
+    let password = event.target.password.value;
+    let name = event.target.name2.value;
+    let age = event.target.age2.value;
+
+    let data = {
+        username,
+        password,
+        name,
+        age
+    };
+    const options = {
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    };
+    const response = await fetch(
+        "http://localhost:3000/register",
+        options
+    );
+    const responseJson = await response.json();
+    console.log(responseJson);
+}
+
