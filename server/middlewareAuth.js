@@ -16,6 +16,4 @@ function verifyToken(req, res, next){
         res.status(403).json({ err: 'Missing token' })
     }
 }
-module.exports = {
-    verifyToken
-}
+module.exports = { verifyToken }

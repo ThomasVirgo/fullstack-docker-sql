@@ -31,14 +31,14 @@ app.get('/users/:id', async (req,res) => {
     }
 })
 
-app.post('/users', async (req,res) => {
-    try{
-        const newUser = await User.create(req.body);
-        res.status(201).json(newUser)
-    } catch(err) {
-        res.status(400).json(err)
-    }
-})
+// app.post('/users', async (req,res) => {
+//     try{
+//         const newUser = await User.create(req.body);
+//         res.status(201).json(newUser)
+//     } catch(err) {
+//         res.status(400).json(err)
+//     }
+// })
 
 app.post('/register', async (req, res) => {
     try {

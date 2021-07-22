@@ -37,7 +37,7 @@ class User {
     static create(data){
         return new Promise (async (resolve,reject) => {
             try{
-                const userTable = await db.query('INSERT INTO user_data (username,password,name,age) VALUES ($1, $2, $3, $4) RETURNING *', [ data.username, data.password, data.name, data.age ]);
+                const userTable = await db.query('INSERT INTO users (email, username,password) VALUES ($1, $2, $3) RETURNING *', [ data.email, data.username, data.password ]);
                 let newUser = new User(userTable.rows[0]);
                 resolve(newUser);
             } catch (err) {
