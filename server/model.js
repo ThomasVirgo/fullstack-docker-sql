@@ -3,10 +3,9 @@ const db = require('./dbConfig');
 class User {
     constructor(data){
         this.id = data.id;
-        this.name = data.name || 'dummy_name';
-        this.age = data.age || 100;
+        this.email = data.email;
         this.username = data.username;
-        this.password = data.password;
+        this.hashedPassword = data.password;
     }
 
     //note that static methods are called on the class itself (i.e. User) and not on an instance of the class
@@ -42,6 +41,18 @@ class User {
                 resolve(newUser);
             } catch (err) {
                 reject(`Invalid data supplied of the form: ${Object.keys(data).map(key => [key, data[key]])}`)
+            }
+        })
+    }
+
+    static findByEmail(email){
+        return new Promise(async (res, rej) => {
+            try {
+                let result = await db.query('SELECT * FROM users WHERE email = $1;', [ email ]);
+                let user = new User(result.rows[0])
+                res(user)
+            } catch (err) {
+                rej(`Error retrieving user: ${err}`)
             }
         })
     }

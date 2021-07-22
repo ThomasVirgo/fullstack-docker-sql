@@ -1,83 +1,81 @@
-const form = document.getElementById('form');
-form.addEventListener('submit', postData);
+const registerForm = document.getElementById('register-form');
+registerForm.addEventListener('submit', requestRegistration);
 
-const userSection = document.getElementById('users');
 
-async function getUsers(){
-    const userCollection = await fetch("http://localhost:3000/users");
-    return userCollection;
-};
 
-async function createUserElements(){
-    userSection.innerHTML = '';
-    const userCollection = await getUsers();
-    const userArray = await userCollection.json();
-    userArray.forEach(user => createUserDiv(user));
-};
+// AUTH FUNCTIONS
 
-function createUserDiv(user){
-    let div = document.createElement('div');
-    div.textContent = `Hi I am ${user.name} and I am ${user.age} years old!`
-    userSection.appendChild(div);
-};
-
-async function postData(event){
-    event.preventDefault();
-    let data = {
-        name: event.target.name.value,
-        age: event.target.age.value
-    };
-    const options = {
-        method: "POST",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    };
-    const response = await fetch(
-        "http://localhost:3000/users",
-        options
-    );
-    const responseJson = await response.json();
-    console.log(responseJson);
+async function requestLogin(e){
+    e.preventDefault();
+    try {
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: e.target.email.value,
+                password: e.target.password.value
+            })
+        }
+        const r = await fetch(`http://localhost:3000/login`, options)
+        const data = await r.json()
+        if (!data.success) { throw new Error('Login not authorised'); }
+        login(data.token);
+    } catch (err) {
+        console.warn(err);
+    }
 }
 
-createUserElements();
-
-
-
-//logging in with authentication
-
-const loginForm = document.getElementById('login');
-loginForm.addEventListener('submit', login);
-
-async function login(event){
-    event.preventDefault();
-    let username = event.target.username.value;
-    let password = event.target.password.value;
-    let name = event.target.name2.value;
-    let age = event.target.age2.value;
-
-    let data = {
-        username,
-        password,
-        name,
-        age
-    };
-    const options = {
-        method: "POST",
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    };
-    const response = await fetch(
-        "http://localhost:3000/register",
-        options
-    );
-    const responseJson = await response.json();
-    console.log(responseJson);
+async function requestRegistration(e) {
+    e.preventDefault();
+    try {
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: e.target.email.value,
+                username: e.target.username.value,
+                password: e.target.password.value
+            })
+        }
+        const r = await fetch(`http://localhost:3000/register`, options)
+        const data = await r.json()
+        if (data.err){ throw Error(data.err) }
+        requestLogin(e);
+    } catch (err) {
+        console.warn(err);
+    }
 }
+
+function login(token){
+    const user = jwt_decode(token);
+    localStorage.setItem("token", token);
+    localStorage.setItem("username", user.username);
+    localStorage.setItem("userEmail", user.email);
+    window.location.hash = '#feed';
+}
+
+function logout(){
+    localStorage.clear();
+    window.location.hash = '#login';
+}
+
+function currentUser(){
+    const username = localStorage.getItem('username')
+    return username;
+}
+
+function isLoggedIn(){
+    let token = localStorage.getItem("token");
+    if (!token){
+        console.log('not logged in')
+        return false
+    }
+
+    const user = jwt_decode(token.split(' ')[1]);
+    console.log(user);
+    return true;
+}
+
+isLoggedIn();
+
 
